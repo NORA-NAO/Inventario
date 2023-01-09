@@ -32,7 +32,7 @@ void mostrar();
 void cargar();
 void mostrarI(); // poner despues las funciones para buscarlas y mostrarlas dependiendo de su clave
 void mostrarP();
-int Compra(int canti,int num);
+int Compra(int canti, int vc);
 int mostrarCompra(int canti);
 int TXTcompra(int canti);
 
@@ -43,7 +43,8 @@ compra compras[100];
 
 int main()
 {
-	int i, op, opV, canti = 0, vc, num = 301;
+
+	int i, op, opV, canti = 0, vc = 0, num = 301;
 
 	printf("___________________________________________\n");
 	printf("\t\tQUE USUARIO ERES?\n");
@@ -68,12 +69,8 @@ int main()
 		case 2:
 			printf("Cuantos compras vas a registrar?");
 			scanf("%i", &vc);
-			for (i = 0; i < vc; i++)
-			{
-				canti = Compra(canti,num);
-				TXTcompra(canti);
-				num ++;
-			}
+			Compra(canti, vc);
+
 			break;
 		default:
 			puts("Ups paso algo con la compra");
@@ -275,69 +272,100 @@ void cargar()
 	}
 }
 
-int Compra(int canti, int num)
+int Compra(int canti, int vc)
 {
-
-	int clave, i, cantidad = 0, date;
+	j = 0;
+	int clave, i, cantidad = 0, date, num = 300;
 	char confirm;
 	char fecha[100];
-
-	printf("________________________________________________________________________________________\n");
-	printf("Que quiere actualizar? (Ingresa la clave del producto)\t");
-	scanf("%i", &clave);
-	for (i = 0; i < 100; i++)
+	FILE *fichero;
+	fichero = fopen("Compra.txt", "rt");
+	if (fichero == NULL)
 	{
-		if (clave == art[i].clave)
-		{
-			
-			do
-			{
-				printf("Que cantidad quiere actualizar de %s?\n", art[i].desc);
-				scanf("%i", &cantidad);
-				printf("Actuzlizara %s con la cantidad %i\n", art[i].desc, cantidad);
-				printf("Es correcto? (Y/N)");
-				fflush(stdin);
-				scanf("%c", &confirm);
-			} while (confirm == 'N' || confirm == 'n');
-			printf("Que fecha ingresara para la compra?\n");
-			printf("1.-Hoy		2.-Otra fecha\n");
-			scanf("%i", &date);
-			switch (date)
-			{
-			case 1:
-				t = time(&t);
-				tm = localtime(&t);
-				strftime(fecha, 100, "%d/%m/%Y", tm);
-				printf("Hoy es: %s\n", fecha);
-				break;
-			case 2:
-				// validar fecha
-				printf("Ingrese la fecha:");
-				scanf("%s", fecha);
-				break;
-
-			default:
-				printf("Ups");
-				break;
-			}
-
-			printf("________________________________________________________________________________________\n");
-			compras[canti].num = num;
-			compras[canti].date = (char*)malloc(sizeof(char)*100);
-			int cont = 0;
-			while (fecha[cont] != '\0')
-			{
-				compras[canti].date[cont] = fecha[cont];
-				cont++;
-			}
-			compras[canti].date[cont] = '\0';
-			compras[canti].clave = clave;
-			compras[canti].cantidad = cantidad;
-			compras[canti].costo = art[i].costo;
-			canti++;
-		}
+		printf("No hay fichero\n");
+		num++;
 	}
-	mostrarCompra(canti);
+	else
+	{
+		while (feof(fichero) == 0)
+		{
+			fscanf(fichero, "%d", &compras[j].num);
+			printf("%d|", compras[j].num);
+			compras[j].date = (char *)malloc(sizeof(char) * 100);
+			fscanf(fichero, "%s", compras[j].date);
+			printf("%s|", compras[j].date);
+			fscanf(fichero, "%d", &compras[j].clave);
+			printf("%d|", compras[j].clave);
+			fscanf(fichero, "%d", &compras[j].cantidad);
+			printf("%d|", compras[j].cantidad);
+			fscanf(fichero, "%d", &compras[j].costo);
+			printf("%d|\n", compras[j].costo);
+			j++;
+		}
+		num = compras[j - 2].num;
+		num++;
+	}
+	for (int k = 0; k < vc; k++)
+	{
+		printf("________________________________________________________________________________________\n");
+
+		printf("Que quiere actualizar? (Ingresa la clave del producto)\t");
+		scanf("%i", &clave);
+		for (i = 0; i < 100; i++)
+		{
+			if (clave == art[i].clave)
+			{
+				do
+				{
+					printf("Que cantidad quiere actualizar de %s?\n", art[i].desc);
+					scanf("%i", &cantidad);
+					printf("Actuzlizara %s con la cantidad %i\n", art[i].desc, cantidad);
+					printf("Es correcto? (Y/N)");
+					fflush(stdin);
+					scanf("%c", &confirm);
+				} while (confirm == 'N' || confirm == 'n');
+				printf("Que fecha ingresara para la compra?\n");
+				printf("1.-Hoy		2.-Otra fecha\n");
+				scanf("%i", &date);
+				switch (date)
+				{
+				case 1:
+					t = time(&t);
+					tm = localtime(&t);
+					strftime(fecha, 100, "%d/%m/%Y", tm);
+					printf("Hoy es: %s\n", fecha);
+					break;
+				case 2:
+					// validar fecha
+					printf("Ingrese la fecha:");
+					scanf("%s", fecha);
+					break;
+
+				default:
+					printf("Ups");
+					break;
+				}
+
+				printf("________________________________________________________________________________________\n");
+				compras[canti].num = num;
+				compras[canti].date = (char *)malloc(sizeof(char) * 100);
+				int cont = 0;
+				while (fecha[cont] != '\0')
+				{
+					compras[canti].date[cont] = fecha[cont];
+					cont++;
+				}
+				compras[canti].date[cont] = '\0';
+				compras[canti].clave = clave;
+				compras[canti].cantidad = cantidad;
+				compras[canti].costo = art[i].costo;
+				canti++;
+				num++;
+			}
+		}
+		mostrarCompra(canti);
+	}
+	TXTcompra(canti);
 	return canti;
 }
 
@@ -359,7 +387,7 @@ int TXTcompra(int canti)
 	FILE *fichero;
 	fichero = fopen("Compra.txt", "a");
 
-	fputs("\tNO.COMPRA\tFECHA\t\tCLAVE\tCANTIDAD\tCOSTO\n",fichero);
+	// fputs("\tNO.COMPRA\tFECHA\t\tCLAVE\tCANTIDAD\tCOSTO\n", fichero);
 	if (fichero == NULL)
 	{
 		printf("Error! al crear txt compra");
@@ -368,11 +396,12 @@ int TXTcompra(int canti)
 
 	for (int i = 0; i < canti; i++)
 	{
-		fprintf(fichero, "\t%i\t", compras[i].num);
-		fprintf(fichero,"\t%s\t", compras[i].date);
+		fprintf(fichero, "%i\t", compras[i].num);
+		fprintf(fichero, "%s\t", compras[i].date);
 		fprintf(fichero, "%i\t", compras[i].clave);
-		fprintf(fichero,"%i\t",compras[i].cantidad);
-		fprintf(fichero,"\t%i\n",compras[i].costo);
+		fprintf(fichero, "%i\t", compras[i].cantidad);
+		fprintf(fichero, "%i\n", compras[i].costo);
 	}
+
 	return canti;
 }
