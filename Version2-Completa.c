@@ -39,24 +39,22 @@ struct
 int j = 0, k = 0;
 
 void crear();
-void mostrar();
-void cargar(int *cont);
-void mostrarI(); // poner despues las funciones para buscarlas y mostrarlas dependiendo de su clave
+void cargar(int *cont);//modificar 1	Carlos
+void mostrarI(); 
 void mostrarP();
-int Compra(int canti, int vc);
+int Compra(int canti, int vc);//modificar  2	Carlos
 int mostrarCompra(int canti);
-int TXTcompra(int canti);
-int Venta(int canti, int vc);
-int mostrarVenta(int canti);
-int TXTVenta(int canti);
-int binario(int tam, int elemento, articulo art[100]);
-void eliminarTXT();
-void menuE(int cont);
-void menuV(int cont);
-void menuP(int cont);
-void agregarProductos();
-
-void agregar(int *cont);
+int TXTcompra(int canti);//agregar 1	Carlos
+int Venta(int canti, int vc);//modifcar  3	Carlos
+int mostrarVenta(int canti); 
+int TXTVenta(int canti);//agregar	2 Eda
+int binario(int tam, int elemento, articulo art[100]);//agregar	3  Eda
+void eliminarTXT();//agregar	4	Luis
+void menuE(int cont);//agregar	5	Luis
+void menuV(int cont);//agregar	6	Eduardo
+void menuP(int cont);//agregar	7	Eduardo
+void agregarProductos();//agregar	8   Sara
+void agregar(int *cont);//agregar	9   Sara
 
 articulo art[100] = {0, " ", 0, 0.00, 0.00, " "};
 compra compras[100];
@@ -99,7 +97,6 @@ void agregarProductos()
         fprintf(fichero, "%d\t%s\t%d\t%.2f\t%.2f\t%s\n", art[j].clave, art[j].desc, art[j].ext, art[j].costo, art[j].precio, art[j].unidad);
         j++;
     } while (art[j].clave != 0);
-    fclose(fichero);
 }
 
 void agregar(int *cont)
@@ -107,7 +104,7 @@ void agregar(int *cont)
 
     FILE *fichero;
     fichero = fopen("inventario.txt", "at");
-
+	j=(*cont)-1;
     if (fichero == NULL)
     {
         /* Imprimimos un mensaje para indicar que no existe. */
@@ -119,10 +116,17 @@ void agregar(int *cont)
         fflush(stdin);
 
         printf("\nClave:  ");
-        // validar para que no se repita?
-
         scanf("%d", &art[j].clave);
-
+		int k=0;
+		do
+    	{
+    		while (art[j].clave==art[k].clave || art[j].clave<=200 || art[j].clave>300)
+        	{
+        		printf("\nEl numero de clave ya existe o esta fuera del rango de productos\n Ingrese otra Clave:  ");
+				scanf("%d", &art[j].clave);
+			}
+       		 k++;
+    	} while (art[k].clave != 0);
         printf("\nDescripcion:  ");
         scanf("%s", art[j].desc);
 
@@ -137,19 +141,9 @@ void agregar(int *cont)
 
         printf("\nUnidad:  ");
         scanf("%s", art[j].unidad);
-        /*for (int f=0; f<100; f++){
-            if (art[f].clave==0){
-                n=f-1;
-                printf("Si entre");
-            }
-        }
-        j = 0;
-        do
-        {
-            fprintf(fichero, "%d\t%s\t%d\t%.2f\t%.2f\t%s\n", art[j].clave, art[j].desc, art[j].ext, art[j].costo, art[j].precio, art[j].unidad);
-            j++;
-        } while (art[j].clave != 0);
-        Cerramos*/
+        
+        fprintf(fichero, "%d\t%s\t%d\t%.2f\t%.2f\t%s\n", art[j].clave, art[j].desc, art[j].ext, art[j].costo, art[j].precio, art[j].unidad);
+	
         fclose(fichero);
         printf("\n________________________________________________________________________________________\n");
     }
@@ -248,7 +242,7 @@ int Compra(int canti, int vc)
         while (feof(fichero) == 0)
         {
             fscanf(fichero, "%d", &compras[j].num);
-            printf("%d|", compras[j].num);
+            // printf("%d|", compras[j].num);
             compras[j].date = (char *)malloc(sizeof(char) * 100);
             fscanf(fichero, "%s", compras[j].date);
             // printf("%s|", compras[j].date);
@@ -315,17 +309,16 @@ int Compra(int canti, int vc)
                 num++;
 
                 art[i].ext = art[i].ext + cantidad;
-                mostrarCompra(canti);
-                
+                eliminarTXT();
+                crear();
+                agregarProductos();
                 
             }
         }
-       eliminarTXT();
-       crear();
-       agregarProductos(); 
+        mostrarCompra(canti);
     }
-    fclose(fichero);
     TXTcompra(canti);
+    fclose(fichero);
     return canti;
 }
 
@@ -362,7 +355,7 @@ int TXTcompra(int canti)
         fprintf(fichero, "%i\t", compras[i].cantidad);
         fprintf(fichero, "%i\n", compras[i].costo);
     }
-    fclose(fichero);
+	fclose(fichero);
     return canti;
 }
 
@@ -386,15 +379,15 @@ int Venta(int canti, int vc)
             // printf("%d|", ventas[j].num);
             ventas[j].date = (char *)malloc(sizeof(char) * 100);
             fscanf(fichero, "%s", ventas[j].date);
-            // printf("%s|", ventas[j].date);
+            //printf("%s|", ventas[j].date);
             fscanf(fichero, "%d", &ventas[j].clave);
-            // printf("%d|", ventas[j].clave);
+            //printf("%d|", ventas[j].clave);
             fscanf(fichero, "%d", &ventas[j].cantidad);
-            // printf("%d|", ventas[j].cantidad);
+            //printf("%d|", ventas[j].cantidad);
             fscanf(fichero, "%d", &ventas[j].costo);
-            // printf("%d|", ventas[j].costo);
+            //printf("%d|", ventas[j].costo);
             fscanf(fichero, "%f", &ventas[j].precio);
-            // printf("%.2f|\n", ventas[j].precio);
+            //printf("%.2f|\n", ventas[j].precio);
             j++;
         }
         num = ventas[j - 2].num;
@@ -403,7 +396,7 @@ int Venta(int canti, int vc)
     for (int k = 0; k < vc; k++)
     {
         printf("________________________________________________________________________________________\n");
-        printf("Que quiere actualizar? (Ingresa la clave del producto)\t");
+        printf("Que producto quiere vender? (Ingresa la clave del producto)\t");
         scanf("%i", &clave);
         while (clave <= 200 || clave > 299)
         {
@@ -435,11 +428,14 @@ int Venta(int canti, int vc)
                         fflush(stdin);
                         scanf("%c", &confirm);
                     } while (confirm == 'N' || confirm == 'n');
-
-                    t = time(&t);
-                    tm = localtime(&t);
-                    strftime(fecha, 100, "%d/%m/%Y", tm);
-                    printf("Hoy es: %s\n", fecha);
+                   
+                        t = time(&t);
+                        tm = localtime(&t);
+                        strftime(fecha, 100, "%d/%m/%Y", tm);
+                        printf("Hoy es: %s\n", fecha);
+                        break;
+                   
+                    
 
                     printf("________________________________________________________________________________________\n");
                     ventas[canti].num = num;
@@ -467,8 +463,8 @@ int Venta(int canti, int vc)
         }
         mostrarVenta(canti);
     }
-    fclose(fichero);
     TXTVenta(canti);
+	fclose(fichero);
     return canti;
 }
 
@@ -506,7 +502,7 @@ int TXTVenta(int canti)
         fprintf(fichero, "%i\t", ventas[i].costo);
         fprintf(fichero, "%.4f\n", ventas[i].precio);
     }
-    fclose(fichero);
+	fclose(fichero);
     return canti;
 }
 
@@ -565,11 +561,11 @@ int binario(int tam, int elemento, articulo art[100])
 
 void menuE(int cont)
 {
-    system("clear");
+    system("cls");
     printf("HOLA ENCARGADO\n");
     mostrarI();
     printf("Que quiere hacer?\n");
-    printf("1.- Agregar\t2.-Compras\n");
+    printf("1.- Agregar producto\t2.-Compras\n");
     printf("3.-Buscar\t4.-Salir\n");
     scanf("%i", &opV);
     int indiceEncontrado = 0, clave;
@@ -642,7 +638,7 @@ void menuE(int cont)
 
 void menuV(int cont)
 {
-    system("clear");
+    system("cls");
     printf("Hola vendedor\n");
     mostrarP();
     printf("Que quiere hacer?\n");
@@ -716,7 +712,7 @@ void menuV(int cont)
 
 void menuP(int cont)
 {
-    system("clear");
+    system("cls");
     printf("\n___________________________________________\n");
     printf("\t\tQUE USUARIO ERES?\n");
     printf("___________________________________________\n");
